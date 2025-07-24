@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CollIDE - Collaborative IDE</title>
+    <!-- Import CodeMirror editor for in-browser code editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+    <!-- Dark theme for CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material.min.css"> 
+    <!-- import tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         textarea {
             resize: none;
@@ -15,7 +23,68 @@
             margin: 0;
             overflow: hidden; 
         }
+        /* Core CodeMirror container */
+        .CodeMirror {
+            background-color: #0f172a; /* Tailwind's bg-gray-900 */
+            color: #f1f5f9;            /* Tailwind's text-slate-100 */
+            font-family: 'Fira Code', 'Inter', monospace;
+            font-size: 0.875rem;       /* Tailwind's text-sm */
+            height: 100% !important;
+            border-radius: 0.5rem;
+        }
+
+        /* Scrollbar inside the editor */
+        .CodeMirror-scroll {
+            overflow: auto;
+        }
+
+        /* Line number gutter */
+        .CodeMirror-gutters {
+            background-color: #1e293b; /* bg-gray-800 */
+            color: #94a3b8;            /* text-slate-400 */
+            border-right: 1px solid #334155; /* border-gray-700 */
+        }
+
+        .CodeMirror-linenumber {
+            color: #64748b; /* text-slate-500 */
+        }
+
+        /* Selection */
+        .CodeMirror-selected {
+            background-color: rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+        }
+
+        /* Matching brackets */
+        .CodeMirror-matchingbracket {
+            color: #facc15;       /* yellow-400 */
+            font-weight: bold;
+            background-color: rgba(250, 204, 21, 0.1); /* translucent yellow */
+        }
+
+        /* Cursor */
+        .CodeMirror-cursor {
+            border-left: 2px solid #38bdf8; /* cyan-400 */
+        }
+
+        /* Line highlight (optional) */
+        .CodeMirror-activeline-background {
+            background: rgba(255, 255, 255, 0.05); /* soft highlight */
+        }
+
+        /* Autocomplete popup (if using hints addon) */
+        .CodeMirror-hints {
+            background-color: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+
+        .CodeMirror-hint-active {
+            background-color: #334155;
+        }
     </style>
+    
 </head>
 <body class="font-sans bg-gray-900 text-gray-100 flex flex-col h-screen">
     <header class="bg-gray-800 p-4 shadow-md flex justify-between items-center">
@@ -48,6 +117,14 @@
     </main>
     <!-- Load the socket.io client script from the server -->
     <script src="/socket.io/socket.io.js"></script>
+    <!-- Code for codespace highlighting -->
+    <script>
+        var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
+            lineNumbers:true,
+            mode: "javascript",
+            theme: "default"
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
