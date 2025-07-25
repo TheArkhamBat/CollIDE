@@ -11,9 +11,15 @@ app.use(express.static('public'));//this sets up a static server from 'public' f
 
 io.on('connection',(socket)=>{//triggered when client connects
     console.log("A user connected.");
+
     //when code is changed, emit code-update event with new code
     socket.on('code-change',(code)=>{
         socket.broadcast.emit('code-update',code);
+    })
+
+    //when scratchpad text is changed, emit scratchpad-update event with new text
+    socket.on('scratchpad-change',(scratchpadText)=>{
+        socket.broadcast.emit('scratchpad-update',scratchpadText);
     })
 
     socket.on('disconnect',()=>{//triggered when client disconnects

@@ -1,5 +1,6 @@
 const socket=io();//calls socket.io client and connects to the server
-let suppressChange=false;//Infinite event emit loop glitch occuring without this
+let suppressCodeChange=false;//Infinite event emit loop glitch occuring without this
+let suppressTextChange=false;
 
 //Code for codespace highlighting
 var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
@@ -8,12 +9,21 @@ var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
             theme: "default"
         });
 
+//Scratchpad area
+var scratchpad=document.getElementById('scratchpad');
+
 //Emits only if the change occurs locally, not remotely
 editor.on('change',()=>{
-    if (suppressChange) return;//prevents the loop
+    if (suppressCodeChange) return;//prevents the loop
     const code=editor.getValue();
     socket.emit('code-change',code);
 });
+//EMit on scratchpad change
+scratchpad.addEventListener('input',()=>{
+    if (suppressTextChange) return;
+    const scratchpadText=scratchpad.value;
+    socket.emit('scratchpad-change',scratchpadText);
+})
 
 console.log("script.js loaded successfully!");
 
@@ -30,8 +40,22 @@ socket.on('code-update',(newCode)=>{
     currentCode=editor.getValue();//gets code in local textArea
     if (currentCode===newCode) return;//does not emit if there isn't any actual change
     
-    suppressChange=true;//semaphore lock
+    suppressCodeChange=true;//semaphore lock
     editor.setValue(newCode);//update actual code
     editor.setCursor(currentCursor);//update cursor position
-    suppressChange=false;//semaphore unlock
+    suppressCodeChange=false;//semaphore unlock
+});
+//when scratchpad update event is received
+socket.on('scratchpad-update',(newText)=>{
+    const currentText=scratchpad.value;//text in local scratchpad
+    if (currentText===newText) return;//only runs code if actual change in scratchpad text
+    const start = scratchpad.selectionStart;
+    const end = scratchpad.selectionEnd;
+ 
+
+    suppressTextChange=true;//semaphore lock
+    scratchpad.value=newText;//update scratchpad text
+    //restores cursor to where it was before, without this it will go back to bgeinning ever time
+    scratchpad.setSelectionRange(start, end);
+    suppressTextChange=false;//semaphore unlock
 });
