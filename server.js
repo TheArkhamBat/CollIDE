@@ -44,6 +44,17 @@ io.on('connection',(socket)=>{//triggered when client connects
             console.log("An anonymous user has disconnected.");
         }
     });
+
+    // Listen for when a client is typing
+    socket.on('typing', () => {
+        // Get the username associated with this socket
+        const username = users.get(socket.id);
+        if (username) {
+            // Broadcast to all other clients that this user is typing
+            socket.broadcast.emit('user-typing', username);
+        }
+    });
+
 });
 //Console log whenever express acts as a static server
 server.listen(PORT,()=>{

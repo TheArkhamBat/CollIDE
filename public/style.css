@@ -137,3 +137,12 @@ textarea {
 textarea:focus {
     outline: none;
 }
+
+
+#typing-indicator {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    font-style: italic;
+    min-height: 1.2rem; /* Prevents header from jumping in size */
+    margin-left: 1rem;
+}
