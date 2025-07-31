@@ -7,6 +7,9 @@ const {Server}= require('socket.io');//extract server class from socket.io (dest
 const server=http.createServer(app);//create a raw http server; passes to app to respond whenever there is any incoming request
 const io=new Server(server);//bind socket.io to the server
 
+//map which stores all connected users 
+const users = new Map();
+
 app.use(express.static('public'));//this sets up a static server from 'public' folder
 
 io.on('connection',(socket)=>{//triggered when client connects
@@ -22,8 +25,24 @@ io.on('connection',(socket)=>{//triggered when client connects
         socket.broadcast.emit('scratchpad-update',scratchpadText);
     })
 
-    socket.on('disconnect',()=>{//triggered when client disconnects
-        console.log("A user has disconnected.");
+    //this listens to new users joined event 
+    socket.on('new-user-joined', (username) => {
+        users.set(socket.id, username);
+        const userList = Array.from(users.values());
+        io.emit('update-user-list', userList);
+    });
+
+    //broadcasts users disconnecting 
+    socket.on('disconnect', () => {
+        const username = users.get(socket.id);
+        if (username) {
+            console.log(`${username} has disconnected.`);
+            users.delete(socket.id);
+            const userList = Array.from(users.values());
+            io.emit('update-user-list', userList);
+        } else {
+            console.log("An anonymous user has disconnected.");
+        }
     });
 });
 //Console log whenever express acts as a static server

@@ -12,6 +12,9 @@ var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
 //Scratchpad area
 var scratchpad=document.getElementById('scratchpad');
 
+const connectButton = document.getElementById('connectc-button');
+const usernameInput = document.getElementById('username-input');
+
 //Emits only if the change occurs locally, not remotely
 editor.on('change',()=>{
     if (suppressCodeChange) return;//prevents the loop
@@ -27,7 +30,7 @@ scratchpad.addEventListener('input',()=>{
 
 console.log("script.js loaded successfully!");
 
-socket.on('connect',()=>{
+socket.on('connect', () => {
     console.log("Connected to Socket.io server");
 });
 
@@ -58,4 +61,39 @@ socket.on('scratchpad-update',(newText)=>{
     //restores cursor to where it was before, without this it will go back to bgeinning ever time
     scratchpad.setSelectionRange(start, end);
     suppressTextChange=false;//semaphore unlock
+});
+
+socket.on('update-user-list', (users) => {
+    const userListElement = document.getElementById('user-list');
+    if (!userListElement) return;
+
+    // Clear the current list of user tags
+    userListElement.innerHTML = '';
+
+    // Add each user to the list as a styled tag
+    users.forEach(user => {
+        // Create a <span> element, which is better for inline tags
+        const userTag = document.createElement('span');
+        userTag.innerText = user;
+
+        // Apply the .user-tag class from your CSS file
+        userTag.classList.add('user-tag');
+
+        // Add the new styled tag to the list
+        userListElement.appendChild(userTag);
+    });
+});
+
+connectButton.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    if (username) {
+        // Send the username to the server
+        socket.emit('new-user-joined', username);
+
+        // Optionally, hide the input and button after connecting
+        usernameInput.style.display = 'none';
+        connectButton.style.display = 'none';
+    } else {
+        alert("Please enter a username.");
+    }
 });
