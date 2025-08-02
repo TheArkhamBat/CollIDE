@@ -2,6 +2,14 @@ const socket=io();//calls socket.io client and connects to the server
 let suppressCodeChange=false;//Infinite event emit loop glitch occuring without this
 let suppressTextChange=false;
 
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
 //Code for codespace highlighting
 var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
             lineNumbers:true,
@@ -14,21 +22,21 @@ var scratchpad=document.getElementById('scratchpad');
 
 const connectButton = document.getElementById('connectc-button');
 const usernameInput = document.getElementById('username-input');
+const debouncedEmitTyping = debounce(() => socket.emit('typing'), 400);
 
-//Emits only if the change occurs locally, not remotely
-editor.on('change',()=>{
-    if (suppressCodeChange) return;//prevents the loop
-    socket.emit('typing');
-    const code=editor.getValue();
-    socket.emit('code-change',code);
+editor.on('change', () => {
+    if (suppressCodeChange) return;
+    debouncedEmitTyping();
+    const code = editor.getValue();
+    socket.emit('code-change', code);
 });
-//EMit on scratchpad change
-scratchpad.addEventListener('input',()=>{
+
+scratchpad.addEventListener('input', () => {
     if (suppressTextChange) return;
-    socket.emit('typing');
-    const scratchpadText=scratchpad.value;
-    socket.emit('scratchpad-change',scratchpadText);
-})
+    debouncedEmitTyping();
+    const scratchpadText = scratchpad.value;
+    socket.emit('scratchpad-change', scratchpadText);
+});
 
 console.log("script.js loaded successfully!");
 
