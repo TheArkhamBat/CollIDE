@@ -1,6 +1,7 @@
 const socket=io();//calls socket.io client and connects to the server
 let suppressCodeChange=false;//Infinite event emit loop glitch occuring without this
 let suppressTextChange=false;
+let currentRoomId = null;
 
 //Code for codespace highlighting
 var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
@@ -12,7 +13,7 @@ var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
 //Scratchpad area
 var scratchpad=document.getElementById('scratchpad');
 
-const connectButton = document.getElementById('connectc-button');
+const connectButton = document.getElementById('connect-button');
 const usernameInput = document.getElementById('username-input');
 
 //Emits only if the change occurs locally, not remotely
@@ -84,29 +85,43 @@ socket.on('update-user-list', (users) => {
         // Add the new styled tag to the list
         userListElement.appendChild(userTag);
     });
+    //display number of users
+    document.getElementById("user-count").innerText=users.length;
 });
 
+//connect button logic
 connectButton.addEventListener('click', () => {
     const username = usernameInput.value.trim();
+    const roomInput = document.getElementById("room-id-input");
+    let room = roomInput.value.trim();
+
     if (!username) {
         alert("Please enter a username.");
-        return; // Stop if username is empty
-    }
-    const room = prompt("Enter the 6-digit room ID:");
-
-    // Basic validation to ensure a room was entered
-    if (!room || room.trim() === '') {
-        alert("You must enter a room ID to join.");
         return;
     }
 
-    // Send both username and the prompted room ID to the server now heck yeah !!
-    socket.emit('new-user-joined', { username: username, room: room });
+    currentRoomId = room;
+    socket.emit('new-user-joined', { username, room });
 
-    // Hide the input and button after connecting
+});
+
+socket.on('room-not-found', () => {
+    alert("Room not found. Please check the Room ID or leave it empty to create a new one.");
+});
+
+
+//room joined handler
+socket.on('room-joined', (room) => {
+    document.getElementById('room-id-display').innerText = room;
+    document.getElementById("room-info").style.display = "block";
+    // Hide modal and show room ID
+    document.getElementById("connect-modal").style.display = 'none';
     usernameInput.style.display = 'none';
     connectButton.style.display = 'none';
+    roomInput.style.display = 'none';
 });
+
+
 
 //-------------------Lower block malfunctioning------------------------
 // This block handles showing and hiding the typing indicator
@@ -127,4 +142,3 @@ socket.on('user-typing', (username) => {
         typingIndicator.innerText = '';
     }, 2000);
 });
-//--------------------------------------------------------------------------

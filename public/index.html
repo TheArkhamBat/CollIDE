@@ -84,6 +84,26 @@
         .CodeMirror-hint-active {
             background-color: #334155;
         }
+
+        #connect-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #334155;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        min-width: 300px;
+        min-height: 180px; 
+        justify-content: space-evenly;
+    }
+
     </style>
     
 </head>
@@ -92,15 +112,22 @@
         <div class="logo">
             <span class="logo-blue">Coll</span><span class="logo-white">IDE</span>
         </div>
+        <div id="room-info" style="display: none; margin-top: 10px;">
+            Room ID: <span id="room-id-display" style="font-weight: bold;"></span>
+        </div>
+
         <div class="user-info">
             <span class="user-count-text">Connected Users: <span id="user-count">0</span></span>
             
             <div id="user-list" class="flex items-center gap-2 ml-4"></div>
             <div id="typing-indicator"></div>
-            <input type="text" id="username-input" placeholder="Enter your username">
-            <button id="connectc-button">
-                Connect
-            </button>
+        </div>
+        <div id="connect-modal">
+                <input type="text" class="input" id="username-input" placeholder="Enter your username">
+                <input id="room-id-input" class="input" type="text" maxlength="6" pattern="\d{6}" placeholder="Enter Room ID (optional)">
+                <button id="connect-button" style="margin-top: 20px;">
+                    Connect
+                </button>
         </div>
 
     </header>

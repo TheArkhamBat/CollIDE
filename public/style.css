@@ -52,7 +52,7 @@ header {
     font-weight: 500;
 }
 
-#username-input {
+.input {
     padding: 0.5rem;
     border-radius: 0.375rem;
     background-color: #4a5568;
@@ -60,18 +60,19 @@ header {
     border: none;
     outline: none;
     box-sizing: border-box;
+    margin: 5px;
 }
 
-#username-input::placeholder {
+.input::placeholder {
     color: #a0aec0;
 }
 
-#username-input:focus {
+.input:focus {
     outline: none;
     box-shadow: 0 0 0 2px #4299e1;
 }
 
-#connectc-button {
+#connect-button {
     background-color: #3182ce;
     color: #ffffff;
     font-weight: 600;
@@ -83,7 +84,7 @@ header {
     cursor: pointer;
 }
 
-#connectc-button:hover {
+#connect-button:hover {
     background-color: #2b6cb0;
 }
 
