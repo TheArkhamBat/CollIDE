@@ -123,7 +123,6 @@ socket.on('room-joined', (room) => {
 
 
 
-//-------------------Lower block malfunctioning------------------------
 // This block handles showing and hiding the typing indicator
 let typingTimer;
 const typingIndicator = document.getElementById('typing-indicator');
@@ -142,3 +141,45 @@ socket.on('user-typing', (username) => {
         typingIndicator.innerText = '';
     }, 2000);
 });
+
+
+//NEED TO REFINE THIS. NOT 100% WORKING YET 
+// --- Upload and Download Logic ---
+
+const downloadBtn = document.getElementById('download-btn');
+const uploadBtn = document.getElementById('upload-btn');
+const fileInput = document.getElementById('file-input');
+
+// Download Logic
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        const code = editor.getValue();
+        const blob = new Blob([code], { type: 'text/javascript' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'code.js';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    });
+}
+
+// Upload Logic
+if (uploadBtn && fileInput) {
+    uploadBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileContent = e.target.result;
+            editor.setValue(fileContent);
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    });
+}
