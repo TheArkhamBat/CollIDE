@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
             return;
         }
 
-        // ✅ Passed checks — join the room
+        //  Passed checks — join the room
         socket.join(room);
         users.set(socket.id, { username, room });
 
