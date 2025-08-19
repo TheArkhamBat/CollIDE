@@ -183,3 +183,85 @@ if (uploadBtn && fileInput) {
         event.target.value = '';
     });
 }
+
+// Capture console.log and run user code
+const runButton = document.getElementById("run-button");
+const outputBox = document.getElementById("output");
+
+function runJS(code) {
+    const logs = [];
+    const originalLog = console.log;
+
+    // Override console.log
+    console.log = (...args) => {
+        logs.push(args.join(" "));
+        originalLog.apply(console, args);
+    };
+
+    try {
+        new Function(code)(); // safely execute code
+    } catch (err) {
+        logs.push("❌ Error: " + err.message);
+    }
+
+    // Restore console.log
+    console.log = originalLog;
+
+    return logs.join("\n");
+}
+
+if (runButton) {
+    runButton.addEventListener("click", () => {
+        const code = editor.getValue();
+        const output = runJS(code);
+        outputBox.textContent = output;
+    });
+}
+
+
+const outputPanel = document.getElementById("output-panel");
+const dragHandle = document.getElementById("drag-handle");
+
+let isDragging = false;
+let startY = 0;
+let startHeight = 0;
+
+if (runButton) {
+    runButton.addEventListener("click", () => {
+        const code = editor.getValue();
+        const output = runJS(code);
+        outputBox.textContent = output;
+
+        // Show panel at 30% of screen height if hidden
+        if (outputPanel.classList.contains("hidden")) {
+            outputPanel.classList.remove("hidden");
+            outputPanel.style.height = window.innerHeight * 0.3 + "px";
+        }
+    });
+}
+
+// Drag to resize
+dragHandle.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    startY = e.clientY;
+    startHeight = outputPanel.offsetHeight;
+    document.body.style.userSelect = "none"; // prevent text highlight
+});
+
+window.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const dy = startY - e.clientY;
+    const newHeight = startHeight + dy;
+
+    if (newHeight < 5) {
+        outputPanel.classList.add("hidden");
+    } else {
+        outputPanel.style.height = newHeight + "px";
+    }
+});
+
+window.addEventListener("mouseup", () => {
+    isDragging = false;
+    document.body.style.userSelect = "auto";
+});

@@ -84,6 +84,15 @@ header {
     cursor: pointer;
 }
 
+#run-button{
+    background-color: #3182ce;
+    color:white ;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;}
+#run-button:hover{
+    background-color: #2b6cb0;
+}
+
 #connect-button:hover {
     background-color: #2b6cb0;
 }
@@ -146,4 +155,9 @@ textarea:focus {
     font-style: italic;
     min-height: 1.2rem; /* Prevents header from jumping in size */
     margin-left: 1rem;
+}
+
+#output-panel {
+  min-height: 50px;
+  max-height: 80%;
 }

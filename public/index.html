@@ -144,14 +144,26 @@
 
     </header>
     <main>
-        <div class="editor-panel">
-            <div class="panel-header">Code Editor</div>
-            <textarea id="codespace" placeholder="Start coding here..."></textarea>
+        <div class="editor-panel flex flex-col flex-1">
+        <div class="panel-header flex justify-between items-center py-2">
+            <p class="font-semibold">Code Editor</p>
+            <button id="run-button" class="">
+                &#x25B6
+            </button>
+        </div>
+        <textarea id="codespace" placeholder="Start coding here..."></textarea>
         </div>
         <div class="editor-panel">
             <div class="panel-header">Scratchpad</div>
             <textarea id="scratchpad" placeholder="Jot down notes or ideas here..."></textarea>
         </div>
+        <!-- Resizable Output Panel -->
+        <div id="output-panel" class="hidden absolute bottom-0 left-0 right-0 bg-black text-green-400 shadow-lg">
+            <div id="drag-handle" class="h-2 cursor-row-resize bg-gray-700"></div>
+            <pre id="output" class="p-2 overflow-y-auto h-full"></pre>
+        </div>
+
+
     </main>
     <!-- Load the socket.io client script from the server -->
     <script src="/socket.io/socket.io.js"></script>
