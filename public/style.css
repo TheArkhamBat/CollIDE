@@ -161,3 +161,14 @@ textarea:focus {
   min-height: 50px;
   max-height: 80%;
 }
+
+/* At the bottom of style.css */
+#language-select {
+    background-color: #4a5568;
+    color: #e2e8f0;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
