@@ -3,6 +3,40 @@ let suppressCodeChange=false;//Infinite event emit loop glitch occuring without 
 let suppressTextChange=false;
 let currentRoomId = null;
 
+
+let pyodide = null;
+const runButton = document.getElementById("run-button");
+runButton.disabled = true;
+runButton.textContent = "Loading...";
+
+// Loads the Python interpreter
+async function loadPyodideInterpreter() {
+    pyodide = await loadPyodide();
+    console.log("Pyodide loaded successfully!");
+    runButton.disabled = false;
+    runButton.innerHTML = "&#x25B6;";
+}
+loadPyodideInterpreter();
+
+// Python code runner function
+async function runPython(code) {
+    if (!pyodide) return "Pyodide is not ready yet.";
+    try {
+        pyodide.runPython(`
+            import sys
+            import io
+            sys.stdout = io.StringIO()
+        `);
+        // Execute the user's code
+        await pyodide.runPythonAsync(code);
+        // Get the captured output
+        const stdout = pyodide.runPython("sys.stdout.getvalue()");
+        return stdout;
+    } catch (error) {
+        return `Python Error: ${error.message}`;
+    }
+}
+
 //Code for codespace highlighting
 var editor=CodeMirror.fromTextArea(document.getElementById('codespace'),{
             lineNumbers:true,
@@ -184,76 +218,55 @@ if (uploadBtn && fileInput) {
     });
 }
 
-// Capture console.log and run user code
-const runButton = document.getElementById("run-button");
-const outputBox = document.getElementById("output");
-
-function runJS(code) {
-    const logs = [];
-    const originalLog = console.log;
-
-    // Override console.log
-    console.log = (...args) => {
-        logs.push(args.join(" "));
-        originalLog.apply(console, args);
-    };
-
-    try {
-        new Function(code)(); // safely execute code
-    } catch (err) {
-        logs.push("❌ Error: " + err.message);
-    }
-
-    // Restore console.log
-    console.log = originalLog;
-
-    return logs.join("\n");
-}
-
-if (runButton) {
-    runButton.addEventListener("click", () => {
-        const code = editor.getValue();
-        const output = runJS(code);
-        outputBox.textContent = output;
-    });
-}
-
-
+// DELETE all old runButton and dragHandle listeners and REPLACE with this
 const outputPanel = document.getElementById("output-panel");
-const dragHandle = document.getElementById("drag-handle");
+const outputBox = document.getElementById("output");
+const languageSelect = document.getElementById("language-select");
 
+runButton.addEventListener("click", async () => { // Make the listener async
+    const language = languageSelect.value;
+    const code = editor.getValue();
+    let output = "";
+
+    // Disable button while running
+    runButton.textContent = "Running...";
+    runButton.disabled = true;
+
+    if (language === "javascript") {
+        output = runJS(code);
+    } else if (language === "python") {
+        output = await runPython(code); // Await the async Python runner
+    }
+    
+    // Re-enable button
+    runButton.innerHTML = "&#x25B6;";
+    runButton.disabled = false;
+
+    // Display output and show panel
+    outputBox.textContent = output;
+    if (outputPanel.classList.contains("hidden")) {
+        outputPanel.classList.remove("hidden");
+        outputPanel.style.height = window.innerHeight * 0.3 + "px";
+    }
+});
+
+// --- Keep existing resizing logic for the output panel ---
+const dragHandle = document.getElementById("drag-handle");
 let isDragging = false;
 let startY = 0;
 let startHeight = 0;
 
-if (runButton) {
-    runButton.addEventListener("click", () => {
-        const code = editor.getValue();
-        const output = runJS(code);
-        outputBox.textContent = output;
-
-        // Show panel at 30% of screen height if hidden
-        if (outputPanel.classList.contains("hidden")) {
-            outputPanel.classList.remove("hidden");
-            outputPanel.style.height = window.innerHeight * 0.3 + "px";
-        }
-    });
-}
-
-// Drag to resize
 dragHandle.addEventListener("mousedown", (e) => {
     isDragging = true;
     startY = e.clientY;
     startHeight = outputPanel.offsetHeight;
-    document.body.style.userSelect = "none"; // prevent text highlight
+    document.body.style.userSelect = "none";
 });
 
 window.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
-
     const dy = startY - e.clientY;
     const newHeight = startHeight + dy;
-
     if (newHeight < 5) {
         outputPanel.classList.add("hidden");
     } else {
