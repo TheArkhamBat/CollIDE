@@ -12,10 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material.min.css"> 
     <!-- import tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
-    <!--Python code runner-->
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="style.css">
 
     <style>
         textarea {
@@ -133,7 +131,7 @@
                 
                 <button id="upload-btn" style="margin-left: 1rem;">Upload</button>
                 <button id="download-btn">Download</button>
-                <input type="file" id="file-input" style="display: none;" accept=".js,.txt,.html,.css">
+                <input type="file" id="file-input" style="display: none;" accept=".py,.js,.txt,.html,.css">
             </div>
             <!--UPLOAD AND DOWNLOAD YEEEHAWWWWW!!!MURRICAAAAAA!!!!-->
         </div>
@@ -148,16 +146,14 @@
     </header>
     <main>
         <div class="editor-panel flex flex-col flex-1">
-            <div class="panel-header flex justify-between items-center py-2">
-                <p class="font-semibold">Code Editor</p>
-                <div class="flex items-center">
-                    <select id="language-select">
-                        <option value="javascript">JavaScript</option>
-                        <option value="python">Python</option>
-                    </select>
-                    <button id="run-button">&#x25B6;</button>
-                </div>>
-            </div>
+        <div class="panel-header flex justify-between items-center py-2">
+    <p class="font-semibold">Code Editor</p>
+    <!-- This new div groups the buttons together -->
+    <div class="run-buttons-container">
+        <button id="run-button">Run JavaScript</button>
+        <button id="run-python-button">Run Python</button>
+    </div>
+    </div>
         <textarea id="codespace" placeholder="Start coding here..."></textarea>
         </div>
         <div class="editor-panel">

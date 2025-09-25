@@ -29,7 +29,7 @@ To run this project on your local machine, please follow the steps below.
 ### Prerequisites
 You must have the following software installed on your system:
 
-Node.js (which includes npm). ...You can download it from [nodejs.org](https://nodejs.org/).
+Node.js (which includes npm). You can download it from [nodejs.org](https://nodejs.org/).
 
 ### Installation & Setup
 1. Clone the Repository
