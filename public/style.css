@@ -163,12 +163,21 @@ textarea:focus {
 }
 
 /* At the bottom of style.css */
-#language-select {
-    background-color: #4a5568;
-    color: #e2e8f0;
-    border: none;
+#run-python-button {
+    background-color: #28a745; /* A green color to differentiate */
+    color: white;
+    padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    margin-right: 0.5rem;
-    font-size: 0.8rem;
+    margin-left: 0.5rem; /* Add some space */
+    border: none;
+    cursor: pointer;
+}
+
+#run-python-button:hover {
+    background-color: #218838;
+}
+
+#run-python-button:disabled {
+    background-color: #5a6268;
+    cursor: not-allowed;
 }
